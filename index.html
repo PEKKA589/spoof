@@ -1,1 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backlogs?</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; padding: 20px;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; font-family: system-ui, Arial, sans-serif;
+    background: #fff; color: #111;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #121212; color: #f2f2f2; }
+  }
+  h1 { font-size: 22px; margin: 0 0 16px; }
+  input {
+    font: inherit; font-size: 20px; width: 140px; padding: 10px;
+    text-align: center; border: 2px solid #999; border-radius: 8px;
+    background: transparent; color: inherit;
+  }
+  button {
+    font: inherit; font-size: 18px; padding: 10px 20px; margin-left: 8px;
+    border: 2px solid currentColor; border-radius: 8px; cursor: pointer;
+    background: #111; color: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    button { background: #f2f2f2; color: #121212; }
+  }
+  #err { color: #d33; min-height: 22px; margin-top: 10px; }
+  video { max-width: 100%; max-height: 70vh; border-radius: 10px; margin-top: 10px; }
+  #back { display: block; margin: 14px auto 0; background: transparent; color: inherit; }
+  .hide { display: none; }
+</style>
+</head>
+<body>
 
+<div id="entry">
+  <h1>How many backlogs do you have?</h1>
+  <input id="n" type="number" min="0" step="1" placeholder="0" inputmode="numeric">
+  <button id="go" type="button">Submit</button>
+  <div id="err"></div>
+</div>
+
+<div id="out" class="hide">
+  <video id="v" controls playsinline></video>
+  <button id="back" type="button">Back</button>
+</div>
+
+<script>
+  var VIDEO_ZERO = "video1.mp4";   // backlogs = 0
+  var VIDEO_MANY = "video2.mp4";   // backlogs >= 1
+
+  var n = document.getElementById("n");
+  var err = document.getElementById("err");
+  var entry = document.getElementById("entry");
+  var out = document.getElementById("out");
+  var v = document.getElementById("v");
+
+  function go() {
+    var s = n.value.trim();
+    var x = Number(s);
+    if (s === "" || isNaN(x) || x < 0 || Math.floor(x) !== x) {
+      err.textContent = "Enter a whole number (0 or more).";
+      return;
+    }
+    err.textContent = "";
+    v.src = (x === 0) ? VIDEO_ZERO : VIDEO_MANY;
+    entry.classList.add("hide");
+    out.classList.remove("hide");
+    v.play().catch(function () {});
+  }
+
+  document.getElementById("go").addEventListener("click", go);
+  n.addEventListener("keydown", function (e) { if (e.key === "Enter") go(); });
+
+  document.getElementById("back").addEventListener("click", function () {
+    v.pause();
+    v.removeAttribute("src");
+    v.load();
+    out.classList.add("hide");
+    entry.classList.remove("hide");
+    n.value = "";
+    n.focus();
+  });
+</script>
+</body>
+</html>
